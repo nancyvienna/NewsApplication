@@ -3,7 +3,7 @@ import React from 'react';
 
 export const TextComponent = ({...props}) => {
   return (
-    <Text {...props} allowFontScaling={false} style={[props.style]}>
+    <Text {...props} allowFontScaling={false}    numberOfLines={props.NumberOfLines} style={[props.style]}>
       {props.text ? props.text : ''}
     </Text>
   );

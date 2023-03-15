@@ -10,6 +10,7 @@ import {Styles} from '../utility/CommonStyle';
 import {colors, sizes} from '../Constants';
 import links from '../Constants/images';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import moment from 'moment';
 
 import {
   widthPercentageToDP as wp,
@@ -22,7 +23,7 @@ export const FeedComponent = ({...props}) => {
 
   return (
     <FlatList
-      data={data}
+      data={data?.articles}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({item, index}) => {
         return (
@@ -32,26 +33,30 @@ export const FeedComponent = ({...props}) => {
               resizeMode="cover"
               source={links.feed1}>
               <TextComponent
-                text={item?.Heading}
+                NumberOfLines={2}
+                text={item?.title}
                 style={[styles.mainheading]}></TextComponent>
             </ImageBackground>
             <TextComponent
+              NumberOfLines={6}
               text={item?.description}
               style={[styles.description]}></TextComponent>
             <View style={{flexDirection: 'row', width: wp('85%')}}>
               <View style={{width: wp('50%'), justifyContent: 'center'}}>
+                {item?.source?.name && (
+                  <TextComponent
+                    text={'source :' + item?.source?.name}
+                    style={[styles.smalltext]}></TextComponent>
+                )}
                 <TextComponent
-                  text={item?.name}
-                  style={[styles.smalltext]}></TextComponent>
-                <TextComponent
-                  text={item?.date}
+                  text={moment(item?.publishedAt).format('YYYY-MM-DD')}
                   style={[styles.smalltext]}></TextComponent>
               </View>
               <View style={styles.row}>
                 <TouchableOpacity style={styles.buttonview}>
                   <FontAwesome
                     resizeMode="contain"
-                    onPress={() => props.onpressbookmark(item.id)}
+                    onPress={() => props.onpressbookmark(item)}
                     name={item?.isChecked ? 'bookmark' : 'bookmark-o'}
                     color={colors.red}
                     size={wp('8%')}
@@ -71,20 +76,14 @@ export const FeedComponent = ({...props}) => {
         );
       }}
       ListEmptyComponent={() => (
-        <View
-          style={[
-            {
-              paddingVertical: hp('20%'),
-              justifyContent: 'flex-end',
-            },
-          ]}>
+        <View style={styles.mainview1}>
           <TextComponent
             style={[
               Styles().cardSubHeading,
               Styles().fontSize16,
               {textAlign: 'center'},
             ]}
-            text={'No Message List Found!'}
+            text={'Data Not Found!'}
           />
         </View>
       )}
@@ -109,6 +108,13 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     padding: sizes.ss,
   },
+  mainview1: {
+    height: hp('75%'),
+    backgroundColor: 'transparent',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   buttonview: {
     backgroundColor: colors.white,
     width: wp('15%'),
@@ -125,6 +131,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: colors.black,
+    height: hp('15%'),
     fontSize: moderateScale(15),
   },
   smalltext: {

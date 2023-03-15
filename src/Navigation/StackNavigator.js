@@ -12,9 +12,9 @@ import GlobalHeadline from '../Screens/Dashboard/GlobalHeadline';
 import Setting from '../Screens/Dashboard/Setting';
 import Newsfeed from '../Screens/Dashboard/Newsfeed';
 import state from '../Store';
+
 import auth from '../State/auth';
 const Stack = createNativeStackNavigator();
-
 export default function StackNavigator() {
   // const snap = useSnapshot(auth);
   return (

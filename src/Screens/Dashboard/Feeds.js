@@ -8,12 +8,11 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import {colors, sizes} from '../../Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {newsfeedfunc} from '../../State/auth';
-import {launchscreen} from '../../State/auth';
+import {get_feed} from '../../Hooks/auth';
 
 import {
   widthPercentageToDP as wp,
@@ -28,45 +27,18 @@ import {
 import {moderateScale} from 'react-native-size-matters';
 var isSelected = '';
 const Feeds = ({navigation, route}) => {
-  // ------------------------array -------------------------------//
+  const feedData = get_feed();
+  const [articles, setArticles] = useState('');
 
-  const BRANDS = [
-    {
-      name: 'Toyota ',
-      id: 1,
-      slug: 'toyota',
-    },
-    {
-      name: 'Mazda',
-      slug: 'mazda',
-      id: 2,
-    },
-    {
-      name: 'Honda city',
-      slug: 'honda',
-      id: 3,
-    },
-    {
-      name: 'Tesla',
-      slug: 'tesla',
-      id: 5,
-    },
-    {
-      name: 'Mazda',
-      slug: 'mazda',
-      id: 6,
-    },
-    {
-      name: 'Honda city',
-      slug: 'honda',
-      id: 7,
-    },
-    {
-      name: 'Tesla',
-      slug: 'tesla',
-      id: 8,
-    },
-  ];
+  useEffect(() => {
+    if (feedData != null) {
+      if (feedData.data != null) {
+        setArticles(feedData?.data);
+      }
+    }
+  }, [feedData.data]);
+
+  //--------------------Aicall-------------------//
 
   // ----------------------state---------------------------------//
   const [selectedfeed, setSelectedfeed] = React.useState([]);
@@ -75,9 +47,9 @@ const Feeds = ({navigation, route}) => {
   const Nextfunction = () => {
     navigation.navigate('BottomTab');
   };
-  
+
   // -------------------------------------------------------//
-  const feedfunction = (isSelectedvalue, index) => {
+  const feedfunction = (isSelectedvalue, index, item) => {
     if (isSelectedvalue) {
       setSelectedfeed(prev => prev.filter(i => i !== index));
     } else {
@@ -99,23 +71,28 @@ const Feeds = ({navigation, route}) => {
   return (
     <Backgroundlayout>
       <SafeAreaView style={Styles().flex}>
-        <View style={Styles().subcontainer}>
-          <TextComponent
-            text="Include Topics For Your News Feed."
-            style={[styles.mainheading]}></TextComponent>
-          <TextComponent
-            text="You will see news based on topics you select, and you can change these anytime."
-            style={[styles.subhead, {marginTop: hp('4%')}]}></TextComponent>
-          <View style={{paddingVertical: 10}}>
-            <FlatList
-              data={BRANDS}
-              columnWrapperStyle={{flexWrap: 'wrap'}}
-              renderItem={renderBrands}
-              numColumns={3}
-              scrollEnabled={false}
-            />
+        <ScrollView style={{marginBottom: hp('8%')}}>
+          <View style={Styles().subcontainer}>
+            <TextComponent
+              text="Include Topics For Your News Feed."
+              style={[styles.mainheading]}></TextComponent>
+            <TextComponent
+              text="You will see news based on topics you select, and you can change these anytime."
+              style={[styles.subhead, {marginTop: hp('4%')}]}></TextComponent>
+            {/* {articles?.articles?.length > 0 && ( */}
+              <View style={{paddingVertical: 10}}>
+                <FlatList
+                  data={articles.articles}
+                  columnWrapperStyle={{flexWrap: 'wrap'}}
+                  renderItem={renderBrands}
+                  numColumns={3}
+                  scrollEnabled={false}
+                />
+              </View>
+            {/* )} */}
           </View>
-        </View>
+        </ScrollView>
+
         <View style={{bottom: 0, position: 'absolute'}}>
           <Buttoncomponent
             buttontext={'Done'}

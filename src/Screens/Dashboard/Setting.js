@@ -16,7 +16,7 @@ import {colors, sizes} from '../../Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import links from '../../Constants/images';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+// import { SearchingFeed } from '../../Hooks/AuthService';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -52,10 +52,14 @@ console.log(error)
  
     if (keyword?.length > 0 ) {
     setTags([...tags, {name: keyword}]);
+    
     setkeyword('');
     }
   };
-  const Nextfunction = () => {};
+  const Nextfunction = () => {
+
+    // SearchingFeed(tags)
+  };
   // -------------------------------------------------------//
   const renderBrands = ({item, index}) => {
     console.log(item, index);
@@ -82,7 +86,7 @@ console.log(error)
         <Text style={{color: isSelected ? 'white' : 'black'}}>{item.name}</Text>
         <Ionicons
           name={'checkmark-circle'}
-          color={isSelected ? colors.white : colors.lightgrey}
+          color={isSelected ? colors.white : colors.lightgrey}  
           size={wp('7%')}
         />
       </TouchableOpacity>

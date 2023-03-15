@@ -3,6 +3,8 @@ import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import {colors, sizes} from '../../Constants';
 import links from '../../Constants/images';
+import {queryClient} from '../../State/QueryClient';
+import {get_feed} from '../../Hooks/auth';
 
 import {
   widthPercentageToDP as wp,
@@ -11,62 +13,26 @@ import {
 import {
   Header,
   Backgroundlayout,
+  Loader,
   ChecklistComponent,
 } from '../../components/index';
 import {FeedComponent} from '../../components/FeedComponent';
 const Newsfeed = ({navigation, route}) => {
   // ------------------------array -------------------------------//
-  const Feeds = [
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      id: 1,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
 
-      id: 2,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      id: 3,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-
-      id: 5,
-    },
-  ];
   var specialitylist = [
     {name: 'Indian Elections', id: 1},
     {name: 'Cannabis', id: 2},
     {name: 'Canada Immigration', id: 3},
-    {name: 'Cannabis', id: 2},
     {name: 'Cricket', id: 4},
   ];
   // ----------------------state---------------------------------//
-  const [selectedfeed, setSelectedfeed] = React.useState([]);
-  const [optionselect, setOptionselect] = useState(Feeds);
+  const [selectedTopic, setSelectedTopic] = React.useState('');
+  const [selectedvalue, setselectedvalue] = React.useState('');
 
+  const [optionselect, setOptionselect] = useState([]);
+
+  let {data, isLoading} = get_feed(selectedvalue);
   // ------------------------function call-------------------------------//
 
   const handleSelect = id => {
@@ -81,14 +47,10 @@ const Newsfeed = ({navigation, route}) => {
 
   let selected = optionselect.filter(product => product.isChecked);
 
-  const feedfunction = (isSelectedvalue, index) => {
-    if (isSelectedvalue) {
-      setSelectedfeed(prev => prev.filter(i => i !== index));
-    } else {
-      setSelectedfeed(prev => [...prev, index]);
-    }
+  const feedfunction = (index, data) => {
+    setselectedvalue(data?.name);
+    setSelectedTopic(index + 1);
   };
-
   // -------------------------------------------------------//
 
   return (
@@ -98,27 +60,34 @@ const Newsfeed = ({navigation, route}) => {
           RightIcon
           heading="My News Feed"
           imglink={links.filter}></Header>
+        <Loader loading={isLoading}></Loader>
 
-        <FeedComponent
-          data={optionselect ? optionselect : null}
-          onpressbookmark={handleSelect}
-          bookmarkvalue={optionselect}
-        />
-        <View>
-          <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
-            {specialitylist.map((item, index) => {
-              const isSelected =
-                selectedfeed.filter(i => i === index).length > 0;
-              return (
-                <ChecklistComponent
-                  data={item}
-                  index={index}
-                  isselected={isSelected}
-                  setSelectedBrands={feedfunction}></ChecklistComponent>
-              );
-            })}
-          </ScrollView>
-        </View>
+        {data !== undefined && (
+          <>
+            <FeedComponent
+              data={data}
+              onpressbookmark={handleSelect}
+              bookmarkvalue={optionselect}
+            />
+            <View>
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                horizontal={true}>
+                {specialitylist.map((item, index) => {
+                  const isSelected = selectedTopic == item.id ? true : false;
+                  return (
+                    <ChecklistComponent
+                      singleselect
+                      data={item}
+                      index={index}
+                      isselected={isSelected}
+                      setSelectedBrands={feedfunction}></ChecklistComponent>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </>
+        )}
       </SafeAreaView>
     </Backgroundlayout>
   );

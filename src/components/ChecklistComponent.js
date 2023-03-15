@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect} from 'react';
 import {colors, sizes} from '../Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -11,40 +11,64 @@ import {
 import {moderateScale} from 'react-native-size-matters';
 // ------------------------array -------------------------------//
 export const ChecklistComponent = ({...props}) => {
-  const {name, id} = props.data;
-
-  // ----------------------state---------------------------------//
-  const [selectedBrands, setSelectedBrands] = React.useState([]);
-  const isSelected = selectedBrands.filter(i => i === id).length > 0;
-  // ------------------------function call-------------------------------//
+  const {data} = props;
 
   // -------------------------------------------------------//
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (props?.isselected) {
-          props.setSelectedBrands(props?.isselected, props?.index);
-        } else {
-          props.setSelectedBrands(props?.isselected, props?.index);
-        }
-      }}
-      style={[
-        styles.item,
-        props?.isselected && {
-          backgroundColor: colors.red,
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderColor: colors.red,
-        },
-      ]}>
-      <Text style={{color: props?.isselected ? 'white' : 'black'}}>{name}</Text>
-      <Ionicons
-        name={'checkmark-circle'}
-        color={props?.isselected ? colors.white : colors.lightgrey}
-        size={wp('7%')}
-      />
-    </TouchableOpacity>
+    <View>
+      {props?.singleselect ? (
+        <TouchableOpacity
+          onPress={() => {
+            props.setSelectedBrands(props?.index, props?.data);
+          }}
+          style={[
+            styles.item,
+            props?.isselected && {
+              backgroundColor: colors.red,
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderColor: colors.red,
+            },
+          ]}>
+          <Text style={{color: props?.isselected ? 'white' : 'black'}}>
+            {data?.name}
+          </Text>
+          <Ionicons
+            name={'checkmark-circle'}
+            color={props?.isselected ? colors.white : colors.lightgrey}
+            size={wp('7%')}
+          />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => {
+            if (props?.isselected) {
+              props.setSelectedBrands(props?.isselected, props?.index);
+            } else {
+              props.setSelectedBrands(props?.isselected, props?.index);
+            }
+          }}
+          style={[
+            styles.item,
+            props?.isselected && {
+              backgroundColor: colors.red,
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderColor: colors.red,
+            },
+          ]}>
+          <Text style={{color: props?.isselected ? 'white' : 'black'}}>
+            {data?.source?.name}
+          </Text>
+          <Ionicons
+            name={'checkmark-circle'}
+            color={props?.isselected ? colors.white : colors.lightgrey}
+            size={wp('7%')}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
   );
 };
 

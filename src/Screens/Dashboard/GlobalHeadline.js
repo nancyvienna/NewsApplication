@@ -2,10 +2,12 @@ import {View, SafeAreaView, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import links from '../../Constants/images';
+import {searching} from '../../Hooks/auth';
 
 import {
   Header,
   Backgroundlayout,
+  Loader,
   Buttoncomponent,
   SearchBox,
 } from '../../components/index';
@@ -54,16 +56,18 @@ const GlobalHeadline = ({navigation, route}) => {
   ];
   // ----------------------state---------------------------------//
   const [keyword, setkeyword] = useState('');
+  console.log(keyword);
   const [optionselect, setOptionselect] = useState(Feeds);
   // ------------------------function call-------------------------------//
+  let {data, isLoading} = searching(keyword);
 
-  const Searchfunc = async val => {
-    if (val?.length > 0 || val !== undefined) {
-    }
-  };
+  const Searchfunc = async val => {};
 
   const clearInput = async val => {
-    setkeyword('');
+    if (val?.length > 0 || val !== undefined) {
+      setkeyword(val);
+      // setkeyword('');
+    }
   };
   const handleSelect = id => {
     let temp = optionselect.map(product => {
@@ -84,24 +88,26 @@ const GlobalHeadline = ({navigation, route}) => {
           RightIcon
           heading="Top Global Headlines"
           imglink={links.filter}></Header>
+        <Loader loading={isLoading}></Loader>
         <View style={Styles().subcontainer}>
           <SearchBox
             onchangeText={text => {
               setkeyword(text);
               Searchfunc(text);
             }}
-            type="cross"
+            // type="cross"
             Value={keyword}
             Press={() => clearInput(keyword)}
             onpress={() => Searchfunc(keyword)}
           />
         </View>
-
-        <FeedComponent
-          data={optionselect ? optionselect : null}
-          onpressbookmark={handleSelect}
-          bookmarkvalue={optionselect}
-        />
+        {data !== undefined && (
+          <FeedComponent
+            data={data}
+            onpressbookmark={handleSelect}
+            bookmarkvalue={optionselect}
+          />
+        )}
       </SafeAreaView>
     </Backgroundlayout>
   );

@@ -5,6 +5,7 @@ import {Header} from './Header';
 import {SearchBox} from './SearchBox';
 import {ChecklistComponent} from './ChecklistComponent';
 import {ErrorMessage} from './ErrorMessage';
+import {Loader} from './Loader';
 
 
 
@@ -13,6 +14,7 @@ import {ErrorMessage} from './ErrorMessage';
 
 export {
   TextComponent,
+  Loader,
   SearchBox,
   ErrorMessage,
   Header,
