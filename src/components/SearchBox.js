@@ -36,7 +36,7 @@ export const SearchBox = ({...props}) => {
           <TouchableOpacity
             onPress={props.Press}
             style={{flex: 0.1, alignItems: 'center'}}>
-            {props?.type == 'cross' ? (
+            {props?.cross? (
               <Icon name={'close'} color={'#848484'} size={22} />
             ) : (
               <Ionicons name={'arrow-forward'} color={'#848484'} size={22} />

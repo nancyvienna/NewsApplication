@@ -19,13 +19,14 @@ import {
 import {TextComponent} from '../components/index';
 import {moderateScale} from 'react-native-size-matters';
 export const FeedComponent = ({...props}) => {
-  const {data} = props;
 
+  const {data,bookmarkvalue,bookmark} = props;
   return (
     <FlatList
-      data={data?.articles}
+      data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({item, index}) => {
+        // console.log(bookmarkvalue?.includes(item),"++++")
         return (
           <View style={styles.mainview}>
             <ImageBackground
@@ -53,16 +54,16 @@ export const FeedComponent = ({...props}) => {
                   style={[styles.smalltext]}></TextComponent>
               </View>
               <View style={styles.row}>
-                <TouchableOpacity style={styles.buttonview}>
+                <TouchableOpacity style={styles.buttonview}  activeOpacity={0.5}  onPress={() => props.onpressbookmark(item,index)}>
                   <FontAwesome
                     resizeMode="contain"
-                    onPress={() => props.onpressbookmark(item)}
-                    name={item?.isChecked ? 'bookmark' : 'bookmark-o'}
+                 
+                    name={bookmarkvalue?.includes(item)||props.bookmark ? 'bookmark' : 'bookmark-o'}
                     color={colors.red}
                     size={wp('8%')}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonview}>
+                <TouchableOpacity style={styles.buttonview}  activeOpacity={0.5} onPress={() => props.onpressnext(item)}>
                   <FontAwesome
                     resizeMode="contain"
                     name={'share-square-o'}

@@ -2,6 +2,8 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect} from 'react';
 import {colors, sizes} from '../Constants';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 
 import {
   widthPercentageToDP as wp,
@@ -11,8 +13,7 @@ import {
 import {moderateScale} from 'react-native-size-matters';
 // ------------------------array -------------------------------//
 export const ChecklistComponent = ({...props}) => {
-  const {data} = props;
-
+  const {data,isselected} = props;
   // -------------------------------------------------------//
 
   return (
@@ -32,7 +33,7 @@ export const ChecklistComponent = ({...props}) => {
             },
           ]}>
           <Text style={{color: props?.isselected ? 'white' : 'black'}}>
-            {data?.name}
+          {data?.value?.name?data?.value?.name:data?.name}
           </Text>
           <Ionicons
             name={'checkmark-circle'}
@@ -40,33 +41,46 @@ export const ChecklistComponent = ({...props}) => {
             size={wp('7%')}
           />
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            if (props?.isselected) {
-              props.setSelectedBrands(props?.isselected, props?.index);
-            } else {
-              props.setSelectedBrands(props?.isselected, props?.index);
-            }
-          }}
+      ) :
+      
+      
+      
+      (
+        <View
+         
           style={[
             styles.item,
-            props?.isselected && {
+            data?.isSelected  && {
               backgroundColor: colors.red,
               flexDirection: 'row',
               alignItems: 'center',
               borderColor: colors.red,
             },
           ]}>
-          <Text style={{color: props?.isselected ? 'white' : 'black'}}>
-            {data?.source?.name}
+          <Text style={{color: data?.isSelected ? 'white' : 'black'}}>
+            {data?.value?.name?data?.value?.name:data?.name}
           </Text>
           <Ionicons
+           onPress={() => {
+            if (data.isSelected ) {
+              props.setSelectedBrands(data?.isSelected , data);
+            } else {
+              props.setSelectedBrands(data?.isSelected , data);
+            }
+          }}
             name={'checkmark-circle'}
-            color={props?.isselected ? colors.white : colors.lightgrey}
+            color={data?.isSelected ? colors.white : colors.lightgrey}
             size={wp('7%')}
           />
-        </TouchableOpacity>
+          {props.cross&&
+          <Entypo
+          name={'circle-with-cross'}
+          onPress={()=>props.Presscross(props?.data)}
+          color={data?.isSelected  ? colors.white : colors.red}  
+          size={wp('7%')}
+        />
+        }
+        </View>
       )}
     </View>
   );

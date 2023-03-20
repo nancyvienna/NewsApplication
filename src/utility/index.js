@@ -44,7 +44,6 @@ export const showToast = data => {
 
 export const regName = text => {
   const reg = /^[A-Za-z ]{3,25}$/;
-  // console.log('text', text);
   if (reg.test(text) != true) {
     return true;
   }
@@ -52,7 +51,6 @@ export const regName = text => {
 };
 export const reguserName = text => {
   const reg = /^[a-zA-Z][a-zA-Z\d-_\.]+$/;
-  // console.log('text', text);
   if (reg.test(text) != true) {
     return true;
   }
@@ -61,14 +59,12 @@ export const reguserName = text => {
 
 export const regNamespace = text => {
   const reg = /^[A-Za-z]{3,25}$/;
-  // console.log('text', text);
   if (reg.test(text) != true) {
     return true;
   }
   return false;
 };
 export const searchval = val => {
-  // console.log('text', text);
   if (val.length>19) {
     return true;
   }
@@ -80,14 +76,12 @@ export const getPageLimit = () => {
 };
 
 export const isFieldEmpty = text => {
-  // console.log('text', text);
   if (text == '') {
     return true;
   }
   return false;
 };
 export const isValidname = text => {
-  // console.log('text', text);
   if (text.length <= 2) {
     return true;
   }

@@ -1,15 +1,8 @@
 import * as Url from './config';
 import * as Utility from '../utility/index';
-import {Alert} from 'react-native';
-// import {clearData, getData, storageKey} from '../constants/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
-
-export const get = async (url, token, hide = false) => {
-   
+export const get = async (url) => {
     const completeUrl = Url.BASE_URL + url;
-    console.log('completeUrl', completeUrl);
     try {
       const res = await axios(completeUrl, {
         method: 'GET',
@@ -18,19 +11,12 @@ export const get = async (url, token, hide = false) => {
         // const message = "success";
         // !hide ? Utility.showToast({message}) : null;
       }
-      if (res?.statusCode == 411) {
-        Alert.alert('Logout', 'Session Expired!', [
-          {text: 'OK', onPress: () => Logout()},
-        ]);
-      } else {
-
-        // const message = "Something went wrong";
-        // !hide ? Utility.showToast({message}) : null;
+    else {
+        const message = "Something went wrong";
+        Utility.showToast({message})
       }
       return res;
     } catch (error) {
-      const message = "Something went wrong";
-      !hide ? Utility.showToast({message}) : null;
       console.log(error);
       return error;
     }

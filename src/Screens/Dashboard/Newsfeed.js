@@ -1,15 +1,8 @@
 import {View, ScrollView, SafeAreaView, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
-import {colors, sizes} from '../../Constants';
 import links from '../../Constants/images';
-import {queryClient} from '../../State/QueryClient';
 import {get_feed} from '../../Hooks/auth';
-
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from '../../utility/index';
 import {
   Header,
   Backgroundlayout,
@@ -17,35 +10,45 @@ import {
   ChecklistComponent,
 } from '../../components/index';
 import {FeedComponent} from '../../components/FeedComponent';
-const Newsfeed = ({navigation, route}) => {
-  // ------------------------array -------------------------------//
-
-  var specialitylist = [
-    {name: 'Indian Elections', id: 1},
-    {name: 'Cannabis', id: 2},
-    {name: 'Canada Immigration', id: 3},
-    {name: 'Cricket', id: 4},
-  ];
+import {storageKey, storeData, getData} from '../../Hooks/Localauth';
+const Newsfeed = ({navigation}) => {
   // ----------------------state---------------------------------//
   const [selectedTopic, setSelectedTopic] = React.useState('');
   const [selectedvalue, setselectedvalue] = React.useState('');
-
+  const [specialitylist, setspecialitylist] = useState([]);
   const [optionselect, setOptionselect] = useState([]);
+  // ------------------------useEffect -------------------------------//
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getspeciality();
+    });
+    return unsubscribe;
+  }, [navigation]);
+  //-----------------------Api call---------------------------//
   let {data, isLoading} = get_feed(selectedvalue);
   // ------------------------function call-------------------------------//
-
-  const handleSelect = id => {
-    let temp = optionselect.map(product => {
-      if (id === product.id) {
-        return {...product, isChecked: !product.isChecked};
-      }
-      return product;
-    });
-    setOptionselect(temp);
+  const getspeciality = async () => {
+    const topicval = await getData(storageKey.FAVFEEDTOPIC);
+    let _value = JSON.parse(topicval);
+    setspecialitylist(_value);
   };
 
-  let selected = optionselect.filter(product => product.isChecked);
+  const handleSelect = async (item, index) => {
+    console.log(item,"===")
+    if (optionselect?.includes(item)) {
+      setOptionselect(optionselect?.filter(i => i !== item));
+      const bookMarked = JSON.stringify(optionselect?.filter(i => i !== item));
+      storeData(storageKey.BOOKMARK, bookMarked);
+    } else {
+      setOptionselect([...optionselect, item]);
+      const bookMarked = JSON.stringify([...optionselect, item]);
+      storeData(storageKey.BOOKMARK, bookMarked);
+    }
+  };
+  const handlenext = item => {
+    navigation.navigate('Description', {item});
+  };
 
   const feedfunction = (index, data) => {
     setselectedvalue(data?.name);
@@ -58,6 +61,7 @@ const Newsfeed = ({navigation, route}) => {
       <SafeAreaView style={Styles().flex}>
         <Header
           RightIcon
+          onpress={() => navigation.navigate('Feeds')}
           heading="My News Feed"
           imglink={links.filter}></Header>
         <Loader loading={isLoading}></Loader>
@@ -65,16 +69,17 @@ const Newsfeed = ({navigation, route}) => {
         {data !== undefined && (
           <>
             <FeedComponent
-              data={data}
+              data={data?.articles}
               onpressbookmark={handleSelect}
+              onpressnext={handlenext}
               bookmarkvalue={optionselect}
             />
-            <View>
+            <View style={Styles().subcontainer}>
               <ScrollView
                 showsHorizontalScrollIndicator={false}
                 horizontal={true}>
-                {specialitylist.map((item, index) => {
-                  const isSelected = selectedTopic == item.id ? true : false;
+                {specialitylist?.map((item, index) => {
+                  const isSelected = selectedTopic == index + 1 ? true : false;
                   return (
                     <ChecklistComponent
                       singleselect
@@ -93,38 +98,3 @@ const Newsfeed = ({navigation, route}) => {
   );
 };
 export default Newsfeed;
-const styles = StyleSheet.create({
-  paddingVerticall: {
-    paddingVertical: sizes.l,
-  },
-  viewborder: {
-    borderWidth: 1,
-    backgroundColor: colors.white_Colors,
-    borderRadius: 10,
-    borderColor: colors.white_Colors,
-    overflow: 'hidden',
-
-    // fontSize: fontScale(12),
-  },
-  item: {
-    margin: 7,
-    borderColor: colors.redish,
-
-    backgroundColor: colors.greybg,
-    borderRadius: 50,
-    borderWidth: 2,
-    padding: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tab: {
-    backgroundColor: 'red',
-    width: wp('100%'),
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 8,
-    bottom: 0,
-    position: 'absolute',
-  },
-});

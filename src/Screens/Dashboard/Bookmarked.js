@@ -1,79 +1,51 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-
-} from 'react-native';
+import {SafeAreaView, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import links from '../../Constants/images';
-
-
-import {
-  Header,
-  Backgroundlayout,
-} from '../../components/index';
+import {ref, useSnapshot} from 'valtio';
+import auth from '../../State/auth';
+import {Header, Backgroundlayout} from '../../components/index';
 import {FeedComponent} from '../../components/FeedComponent';
+import {bookmarkselect} from '../../State/auth';
+import {storageKey, storeData, getData} from '../../Hooks/Localauth';
+
 const Bookmarked = ({navigation, route}) => {
-  // ------------------------array -------------------------------//
-  const Feeds = [
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      id: 1,
-      isChecked: false,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      isChecked: false,
-      id: 2,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      isChecked: false,
 
-      id: 3,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      isChecked: false,
-
-      id: 4,
-    },
-  ];
   // ----------------------state---------------------------------//
-  const [optionselect, setOptionselect] = useState(Feeds);
-  // ------------------------function call-------------------------------//
-
-  const handleSelect = id => {
-    let temp = optionselect.map(product => {
-      if (id === product.id) {
-        return {...product, isChecked: !product.isChecked};
-      }
-      return product;
+  const [list, setList] = useState([]);
+  const [feedlist, setfeedList] = useState([]);
+  const [globallist, setglobalList] = useState([]);
+  // ------------------------useEffect -------------------------------//
+  
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getspeciality();
     });
-    setOptionselect(temp);
+    return unsubscribe;
+  }, [navigation]);
+  // ------------------------function call-------------------------------//
+  const getspeciality = async () => {
+    const topicval = await getData(storageKey.BOOKMARK);
+    let _value = JSON.parse(topicval);
+    setfeedList(_value);
+    const topicval2 = await getData(storageKey.GLOBALBOOKMARK);
+    let _valueGLOBAL = JSON.parse(topicval2);
+    setglobalList(_valueGLOBAL);
+    const mergedArray = _value?.concat(_valueGLOBAL);
+    setList(mergedArray);
   };
-
-  let selected = optionselect.filter(product => product.isChecked);
+  const handleSelect = (itemToDelete, index) => {
+    list.splice(index, 1);
+    setfeedList(list.slice(0, feedlist.length));
+    setglobalList(list.slice(feedlist.length));
+    const bookMarked = JSON.stringify(list.slice(0, feedlist.length));
+    storeData(storageKey.BOOKMARK, bookMarked);
+    const globalbookMarked = JSON.stringify(list.slice(feedlist.length));
+    storeData(storageKey.GLOBALBOOKMARK, globalbookMarked);
+  };
+  const handlenext = item => {
+    navigation.navigate('Description', {item});
+  };
 
   //------------------------------------------------------------
   return (
@@ -81,13 +53,17 @@ const Bookmarked = ({navigation, route}) => {
       <SafeAreaView style={Styles().flex}>
         <Header
           RightIcon
+          onpress={()=>navigation.navigate("Feeds")}
+
           heading="News Bookmarked"
           imglink={links.filter}></Header>
 
         <FeedComponent
-          data={optionselect ? optionselect : null}
+          data={list ? list : null}
           onpressbookmark={handleSelect}
-          bookmarkvalue={optionselect}
+          onpressnext={handlenext}
+          bookmark
+          bookmarkvalue={list}
         />
       </SafeAreaView>
     </Backgroundlayout>

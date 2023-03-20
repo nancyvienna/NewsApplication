@@ -2,20 +2,25 @@ import { proxy, useSnapshot } from 'valtio'
 import state from '../Store';
 
 const auth = proxy({
-  // splash:false,
-  // newsfeed:false
+  articles:[],
+  globalarticles:[],
+  globalmark:[],
 });
 export default auth;
-// export const launchscreen = (data) => {
-//   console.log(data,"------")
-//   auth.splash = data;
+
+export const bookmarkselect = (data) => {
+  auth.articles = data;
 
 
-// }
-// export const newsfeedfunc = (data) => {
-//   auth.newsfeed = data;
+}
+export const bookmarkselectglobal = (data) => {
+  auth.globalarticles = data;
 
 
-// }
+}
+export const markselectglobal = (data) => {
+  auth.globalmark = data;
 
+
+}
 

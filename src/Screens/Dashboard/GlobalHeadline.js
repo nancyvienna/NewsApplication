@@ -1,5 +1,5 @@
-import {View, SafeAreaView, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {View, SafeAreaView} from 'react-native';
+import React, {useEffect,useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import links from '../../Constants/images';
 import {searching} from '../../Hooks/auth';
@@ -8,84 +8,57 @@ import {
   Header,
   Backgroundlayout,
   Loader,
-  Buttoncomponent,
   SearchBox,
 } from '../../components/index';
 import {FeedComponent} from '../../components/FeedComponent';
-const GlobalHeadline = ({navigation, route}) => {
-  // ------------------------array -------------------------------//
-  const Feeds = [
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      id: 1,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
+import {storageKey, storeData, getData} from '../../Hooks/Localauth';
 
-      id: 2,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-      id: 3,
-    },
-    {
-      description:
-        'India’s most populous state Uttar Pradesh, currently ruled by Prime Minister Narendra Modi’s Bharatiya Janata Party, will hold a state election in seven phases starting from Feb. 10, Chief Election Commissioner Sushil Chandra said on Saturday. ',
-      Heading:
-        'Winning chances since 2004: 18% for tainted candidates, 11% for clean',
-      name: 'Source: The Indian Express',
-      date: 'Jan 12, 2022',
-
-      id: 5,
-    },
-  ];
+const GlobalHeadline = ({navigation}) => {
   // ----------------------state---------------------------------//
   const [keyword, setkeyword] = useState('');
-  console.log(keyword);
-  const [optionselect, setOptionselect] = useState(Feeds);
-  // ------------------------function call-------------------------------//
+  const [optionselect, setOptionselect] = useState([]);
+  //----------------------useEffect-------------------------------//
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setkeyword('')
+    });
+    return unsubscribe;
+  }, [navigation]);
+  // ------------------------Api call-------------------------------//
+  
   let {data, isLoading} = searching(keyword);
-
-  const Searchfunc = async val => {};
+  // ------------------------function call-------------------------------//
 
   const clearInput = async val => {
     if (val?.length > 0 || val !== undefined) {
-      setkeyword(val);
-      // setkeyword('');
+      setkeyword('');
     }
   };
-  const handleSelect = id => {
-    let temp = optionselect.map(product => {
-      if (id === product.id) {
-        return {...product, isChecked: !product.isChecked};
-      }
-      return product;
-    });
-    setOptionselect(temp);
+  const Searchfunc = async val => {
+    if (val?.length > 0 || val !== undefined) {
+      setkeyword(val);
+    }
   };
-
-  let selected = optionselect.filter(product => product.isChecked);
-
+  const handleSelect = async (item, index) => {
+    if (optionselect.includes(item)) {
+      setOptionselect(optionselect.filter(i => i !== item));
+      const bookMarked = JSON.stringify(optionselect.filter(i => i !== item));
+      storeData(storageKey.GLOBALBOOKMARK, bookMarked);
+    } else {
+      setOptionselect([...optionselect, item]);
+      const bookMarked = JSON.stringify([...optionselect, item]);
+      storeData(storageKey.GLOBALBOOKMARK, bookMarked);
+    }
+  };
+  const handlenext = item => {
+    navigation.navigate('Description', {item});
+  };
   return (
     <Backgroundlayout>
       <SafeAreaView style={Styles().flex}>
         <Header
           RightIcon
+          onpress={() => navigation.navigate('Feeds')}
           heading="Top Global Headlines"
           imglink={links.filter}></Header>
         <Loader loading={isLoading}></Loader>
@@ -95,7 +68,7 @@ const GlobalHeadline = ({navigation, route}) => {
               setkeyword(text);
               Searchfunc(text);
             }}
-            // type="cross"
+           cross
             Value={keyword}
             Press={() => clearInput(keyword)}
             onpress={() => Searchfunc(keyword)}
@@ -103,8 +76,9 @@ const GlobalHeadline = ({navigation, route}) => {
         </View>
         {data !== undefined && (
           <FeedComponent
-            data={data}
+            data={data?.articles}
             onpressbookmark={handleSelect}
+            onpressnext={handlenext}
             bookmarkvalue={optionselect}
           />
         )}
@@ -113,4 +87,3 @@ const GlobalHeadline = ({navigation, route}) => {
   );
 };
 export default GlobalHeadline;
-const styles = StyleSheet.create({});

@@ -11,6 +11,9 @@ import BottomTab from '../Navigation/BottomTab';
 import GlobalHeadline from '../Screens/Dashboard/GlobalHeadline';
 import Setting from '../Screens/Dashboard/Setting';
 import Newsfeed from '../Screens/Dashboard/Newsfeed';
+import Description from '../Screens/Dashboard/Description';
+
+
 import state from '../Store';
 
 import auth from '../State/auth';
@@ -31,6 +34,9 @@ export default function StackNavigator() {
         <Stack.Screen name="Splash" component={Splash}></Stack.Screen>
         <Stack.Screen name="Setting" component={Setting}></Stack.Screen>
         <Stack.Screen name="BottomTab" component={BottomTab}></Stack.Screen>
+        <Stack.Screen name="Description" component={Description}></Stack.Screen>
+
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

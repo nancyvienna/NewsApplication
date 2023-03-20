@@ -2,21 +2,14 @@ import {
   View,
   ScrollView,
   SafeAreaView,
-  BackHandle,
   StyleSheet,
-  Image,
-  Text,
   FlatList,
-  TouchableOpacity,
-  ImageBackground,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import {colors, sizes} from '../../Constants';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import links from '../../Constants/images';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import { SearchingFeed } from '../../Hooks/AuthService';
+import {storageKey, storeData, getData} from '../../Hooks/Localauth';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -27,69 +20,77 @@ import {
   Backgroundlayout,
   TextComponent,
   Buttoncomponent,
+  ChecklistComponent,
 } from '../../components/index';
 import {moderateScale} from 'react-native-size-matters';
 import * as Utility from '../../utility/index';
-
-const Setting = ({navigation, route}) => {
-  // ------------------------array -------------------------------//
-
+import _ from 'lodash';
+const Setting = ({navigation}) => {
   // ----------------------state---------------------------------//
-  const [keyword, setkeyword] = useState('');
-  const [selectedBrands, setSelectedBrands] = React.useState([]);
-  const [tags, setTags] = useState([]);
-  const [error, setError] = useState(false);
-console.log(error)
-  console.log(selectedBrands);
-  // ------------------------function call-------------------------------//
+  const [keyword, setkeyword] = React.useState('');
+  const [tags, setTags] = React.useState([]);
+  const [error, setError] = React.useState(false);
+  //-------------------------useEffect-----------------------------------------
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getspeciality();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
+  // ------------------------function call-------------------------------//
+  const getspeciality = async () => {
+    const topicval = await getData(storageKey.FEEDTOPIC);
+    let _value = JSON.parse(topicval);
+    setTags(_value);
+  };
   const Searchfunc = async val => {
     setError(true);
-    // if (val?.length > 0 || val !== undefined) {
-    // }
   };
   const selectItem = keyword => {
- 
-    if (keyword?.length > 0 ) {
-    setTags([...tags, {name: keyword}]);
-    
-    setkeyword('');
+    const trimmedKeyword = keyword.trim();
+    if (
+      trimmedKeyword &&
+      (!tags || !tags.some(tag => tag?.name === trimmedKeyword))
+    ) {
+      setTags([...(tags || []), {name: trimmedKeyword, isSelected: false}]);
+      setkeyword('');
+    } else {
+      setkeyword('');
+      const message = 'Already added';
+      Utility.showToast({message});
     }
   };
-  const Nextfunction = () => {
-
-    // SearchingFeed(tags)
+  const Nextfunction = async () => {
+    const topic = JSON.stringify(tags);
+    storeData(storageKey.FEEDTOPIC, topic);
+    navigation.navigate('Feeds');
   };
-  // -------------------------------------------------------//
+  const feedfunction = (isSelectedvalue, value) => {
+    const updatedValues = tags.map(item =>
+      item?.name === value?.name
+        ? {...item, isSelected: !item.isSelected}
+        : item,
+    );
+    setTags(updatedValues);
+  };
+  const removefunc = item => {
+    if (tags.includes(item)) {
+      setTags(tags.filter(i => i !== item));
+      const topic = JSON.stringify(tags.filter(i => i !== item));
+      storeData(storageKey.FEEDTOPIC, topic);
+    }
+  };
+  // ---------------------render----------------------------------//
   const renderBrands = ({item, index}) => {
-    console.log(item, index);
-    const isSelected = selectedBrands.filter(i => i === index).length > 0;
-
     return (
-      <TouchableOpacity
-        onPress={() => {
-          if (isSelected) {
-            setSelectedBrands(prev => prev.filter(i => i !== index));
-          } else {
-            setSelectedBrands(prev => [...prev, index]);
-          }
-        }}
-        style={[
-          styles.item,
-          isSelected && {
-            backgroundColor: colors.red,
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderColor: colors.red,
-          },
-        ]}>
-        <Text style={{color: isSelected ? 'white' : 'black'}}>{item.name}</Text>
-        <Ionicons
-          name={'checkmark-circle'}
-          color={isSelected ? colors.white : colors.lightgrey}  
-          size={wp('7%')}
-        />
-      </TouchableOpacity>
+      <ChecklistComponent
+        data={item}
+        cross
+        index={index}
+        Presscross={removefunc}
+        isselected={tags}
+        setSelectedBrands={feedfunction}></ChecklistComponent>
     );
   };
   // -------------------------------------------------------//
@@ -97,15 +98,18 @@ console.log(error)
   return (
     <Backgroundlayout>
       <SafeAreaView style={Styles().flex}>
-        <Header RightIcon heading="Setting" imglink={links.close}></Header>
-        <ScrollView  style={{marginBottom:hp("8%")}}>
+        <Header
+          RightIcon
+          heading="Setting"
+          imglink={links.close}
+          onpress={() => navigation.navigate('Feeds')}></Header>
+        <ScrollView style={{marginBottom: hp('8%')}}>
           <View style={Styles().subcontainer}>
             <TextComponent
               text={'Add your own custom topic.'}
               style={[styles.text]}></TextComponent>
             <View style={Styles().paddingVerticall}>
               <SearchBox
-               
                 onchangeText={text => {
                   setkeyword(text);
                   Searchfunc(text);

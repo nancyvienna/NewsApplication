@@ -2,17 +2,13 @@ import {
   View,
   ScrollView,
   SafeAreaView,
-  BackHandle,
   StyleSheet,
-  Text,
   FlatList,
-  TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
-import {colors, sizes} from '../../Constants';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {get_feed} from '../../Hooks/auth';
+import {colors} from '../../Constants';
+import {storageKey, storeData, getData} from '../../Hooks/Localauth';
 
 import {
   widthPercentageToDP as wp,
@@ -25,44 +21,58 @@ import {
   ChecklistComponent,
 } from '../../components/index';
 import {moderateScale} from 'react-native-size-matters';
-var isSelected = '';
-const Feeds = ({navigation, route}) => {
-  const feedData = get_feed();
-  const [articles, setArticles] = useState('');
+const Feeds = ({navigation}) => {
+  // ----------------------state---------------------------------//
+  const [specialitylist, setspecialitylist] = useState([]);
+  const [selectedfeed, setSelectedfeed] = React.useState([]);
+  //----------------------useeffect------------------------------------//
 
   useEffect(() => {
-    if (feedData != null) {
-      if (feedData.data != null) {
-        setArticles(feedData?.data);
-      }
-    }
-  }, [feedData.data]);
-
-  //--------------------Aicall-------------------//
-
-  // ----------------------state---------------------------------//
-  const [selectedfeed, setSelectedfeed] = React.useState([]);
-
+    const unsubscribe = navigation.addListener('focus', () => {
+      getspeciality();
+    });
+    return unsubscribe;
+  }, [navigation]);
   // ------------------------function call-------------------------------//
+  const getspeciality = async () => {
+    const topicval = await getData(storageKey.FEEDTOPIC);
+    let _value = JSON.parse(topicval);
+
+    setspecialitylist(_value);
+  };
   const Nextfunction = () => {
+    if (selectedfeed?.length == 0) {
+      const favouritemark = specialitylist?.filter(value => value?.isSelected);
+      const selectedtopic = JSON.stringify(favouritemark);
+      storeData(storageKey.FAVFEEDTOPIC, selectedtopic);
+    } else {
+      const selectedtopic = JSON.stringify(selectedfeed);
+      storeData(storageKey.FAVFEEDTOPIC, selectedtopic);
+    }
+    const topic = JSON.stringify(specialitylist);
+    storeData(storageKey.FEEDTOPIC, topic);
     navigation.navigate('BottomTab');
   };
 
   // -------------------------------------------------------//
-  const feedfunction = (isSelectedvalue, index, item) => {
-    if (isSelectedvalue) {
-      setSelectedfeed(prev => prev.filter(i => i !== index));
-    } else {
-      setSelectedfeed(prev => [...prev, index]);
-    }
+  const feedfunction = (isSelectedvalue, value) => {
+    const updatedValues = specialitylist.map(item =>
+      item?.name === value?.name
+        ? {...item, isSelected: !item.isSelected}
+        : item,
+    );
+    const favouritemark = updatedValues.filter(value => value.isSelected);
+
+    setspecialitylist(updatedValues);
+    setSelectedfeed(favouritemark);
   };
   const renderBrands = ({item, index}) => {
-    const isSelected = selectedfeed.filter(i => i === index).length > 0;
     return (
       <ChecklistComponent
+        // selected
         data={item}
         index={index}
-        isselected={isSelected}
+        isselected={selectedfeed}
         setSelectedBrands={feedfunction}></ChecklistComponent>
     );
   };
@@ -79,17 +89,17 @@ const Feeds = ({navigation, route}) => {
             <TextComponent
               text="You will see news based on topics you select, and you can change these anytime."
               style={[styles.subhead, {marginTop: hp('4%')}]}></TextComponent>
-            {/* {articles?.articles?.length > 0 && ( */}
+            {specialitylist?.length > 0 && (
               <View style={{paddingVertical: 10}}>
                 <FlatList
-                  data={articles.articles}
+                  data={specialitylist}
                   columnWrapperStyle={{flexWrap: 'wrap'}}
                   renderItem={renderBrands}
                   numColumns={3}
                   scrollEnabled={false}
                 />
               </View>
-            {/* )} */}
+            )}
           </View>
         </ScrollView>
 
@@ -110,35 +120,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: hp('7%'),
-
     fontSize: moderateScale(25),
   },
   subhead: {
     color: colors.lightgrey,
     textAlign: 'center',
-
     fontSize: moderateScale(20),
-  },
-
-  item: {
-    margin: 7,
-    borderColor: colors.redish,
-
-    backgroundColor: colors.greybg,
-    borderRadius: 50,
-    borderWidth: 2,
-    padding: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tab: {
-    backgroundColor: 'red',
-    width: wp('100%'),
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 8,
-    bottom: 0,
-    position: 'absolute',
   },
 });
