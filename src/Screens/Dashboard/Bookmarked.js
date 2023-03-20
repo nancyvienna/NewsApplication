@@ -1,4 +1,4 @@
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView, StyleSheet,Alert} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Styles} from '../../utility/CommonStyle';
 import links from '../../Constants/images';
@@ -35,6 +35,18 @@ const Bookmarked = ({navigation, route}) => {
     setList(mergedArray);
   };
   const handleSelect = (itemToDelete, index) => {
+    Alert.alert('', 'Are you sure you want to remove from Bookmarks', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      {text: 'YES', onPress: () =>bookmarkremove(itemToDelete, index)},
+    ]);
+    return true;
+   
+  };
+  const bookmarkremove =(itemToDelete, index)=>{
     list.splice(index, 1);
     setfeedList(list.slice(0, feedlist.length));
     setglobalList(list.slice(feedlist.length));
@@ -42,7 +54,7 @@ const Bookmarked = ({navigation, route}) => {
     storeData(storageKey.BOOKMARK, bookMarked);
     const globalbookMarked = JSON.stringify(list.slice(feedlist.length));
     storeData(storageKey.GLOBALBOOKMARK, globalbookMarked);
-  };
+  }
   const handlenext = item => {
     navigation.navigate('Description', {item});
   };

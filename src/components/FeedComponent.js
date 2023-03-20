@@ -18,6 +18,8 @@ import {
 } from '../utility/index';
 import {TextComponent} from '../components/index';
 import {moderateScale} from 'react-native-size-matters';
+import LinearGradient from 'react-native-linear-gradient';
+
 export const FeedComponent = ({...props}) => {
 
   const {data,bookmarkvalue,bookmark} = props;
@@ -26,18 +28,24 @@ export const FeedComponent = ({...props}) => {
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({item, index}) => {
-        // console.log(bookmarkvalue?.includes(item),"++++")
         return (
           <View style={styles.mainview}>
+             
             <ImageBackground
               style={styles.imgbg}
               resizeMode="cover"
               source={links.feed1}>
+                <LinearGradient
+      {...props}
+       colors={["#D9D6D2E5","#D9D6D2BA", "#D9D6D200"]}
+      style={ styles.imgbg1}>
               <TextComponent
                 NumberOfLines={2}
                 text={item?.title}
                 style={[styles.mainheading]}></TextComponent>
+                </LinearGradient>
             </ImageBackground>
+        
             <TextComponent
               NumberOfLines={6}
               text={item?.description}
@@ -145,4 +153,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: sizes.s,
     borderRadius: 10,
   },
+  imgbg1: {
+    height: wp('30%'),
+    justifyContent: 'center',
+    width:wp("85%"),
+    alignSelf:"center",
+    paddingHorizontal: sizes.s,
+  },
+ 
 });

@@ -35,7 +35,6 @@ const Newsfeed = ({navigation}) => {
   };
 
   const handleSelect = async (item, index) => {
-    console.log(item,"===")
     if (optionselect?.includes(item)) {
       setOptionselect(optionselect?.filter(i => i !== item));
       const bookMarked = JSON.stringify(optionselect?.filter(i => i !== item));

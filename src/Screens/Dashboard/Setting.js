@@ -1,6 +1,7 @@
 import {
   View,
   ScrollView,
+  Alert,
   SafeAreaView,
   StyleSheet,
   FlatList,
@@ -81,6 +82,18 @@ const Setting = ({navigation}) => {
       storeData(storageKey.FEEDTOPIC, topic);
     }
   };
+  const exitfunc = async () => {
+    Alert.alert('', 'Are you sure you want to exit the app?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      {text: 'YES', onPress: () =>navigation.navigate('Feeds')},
+    ]);
+    return true;
+   
+  };
   // ---------------------render----------------------------------//
   const renderBrands = ({item, index}) => {
     return (
@@ -102,7 +115,7 @@ const Setting = ({navigation}) => {
           RightIcon
           heading="Setting"
           imglink={links.close}
-          onpress={() => navigation.navigate('Feeds')}></Header>
+          onpress={() => exitfunc()}></Header>
         <ScrollView style={{marginBottom: hp('8%')}}>
           <View style={Styles().subcontainer}>
             <TextComponent
