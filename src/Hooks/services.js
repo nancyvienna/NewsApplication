@@ -6,7 +6,7 @@ import {getnewsfeed, getSearchnews} from './queries';
 export const getFeed = async payload => {
   try {
     const {data} = await Services.get(
-      url.NEWSFEED + getnewsfeed(payload ? payload : 'topic'),
+      url.NEWSFEED + getnewsfeed(payload ? payload : ''),
     );
     return data;
   } catch (error) {

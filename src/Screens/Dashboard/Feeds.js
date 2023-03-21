@@ -41,9 +41,8 @@ const Feeds = ({navigation}) => {
     setspecialitylist(_value);
   };
   const Nextfunction = () => {
-  console.log(selectedfeed,"specialitylist",specialitylist)
 
-    if (selectedfeed?.length == 0 && specialitylist !==null) {
+    if (selectedfeed?.length !== 0 && specialitylist !==null) {
       const favouritemark = specialitylist?.filter(value => value?.isSelected);
       const selectedtopic = JSON.stringify(favouritemark);
       storeData(storageKey.FAVFEEDTOPIC, selectedtopic);

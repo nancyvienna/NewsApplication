@@ -5,7 +5,7 @@ export default links = {
     filter: require('../assets/images/filter.png'),
     close: require('../assets/images/close.png'),
     global: require('../assets/images/global.png'),
-  
+    logout: require('../assets/images/logout.png'),
     bookmark: require('../assets/images/bookmark.png'),
     bookmark1: require('../assets/images/bookmark1.png'),
     dashboard: require('../assets/images/dashboard.png'),

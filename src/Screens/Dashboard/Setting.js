@@ -50,23 +50,24 @@ const Setting = ({navigation}) => {
   };
   const selectItem = keyword => {
     const trimmedKeyword = keyword.trim();
+    if(trimmedKeyword){
     if (
       trimmedKeyword &&
       (!tags || !tags.some(tag => tag?.name === trimmedKeyword))
     ) {
       setTags([...(tags || []), {name: trimmedKeyword, isSelected: false}]);
+      const topic = JSON.stringify([...(tags || []), {name: trimmedKeyword, isSelected: false}]);
+      storeData(storageKey.FEEDTOPIC, topic);
       setkeyword('');
     } else {
       setkeyword('');
       const message = 'Already added';
       Utility.showToast({message});
     }
+  }
+
   };
-  const Nextfunction = async () => {
-    const topic = JSON.stringify(tags);
-    storeData(storageKey.FEEDTOPIC, topic);
-    navigation.navigate('Feeds');
-  };
+  
   const feedfunction = (isSelectedvalue, value) => {
     const updatedValues = tags.map(item =>
       item?.name === value?.name
@@ -74,6 +75,9 @@ const Setting = ({navigation}) => {
         : item,
     );
     setTags(updatedValues);
+    const topic = JSON.stringify(updatedValues);
+    storeData(storageKey.FEEDTOPIC, topic);
+
   };
   const removefunc = item => {
     if (tags.includes(item)) {
@@ -114,7 +118,7 @@ const Setting = ({navigation}) => {
         <Header
           RightIcon
           heading="Setting"
-          imglink={links.close}
+          imglink={links.logout}
           onpress={() => exitfunc()}></Header>
         <ScrollView style={{marginBottom: hp('8%')}}>
           <View style={Styles().subcontainer}>
@@ -156,7 +160,7 @@ const Setting = ({navigation}) => {
           <Buttoncomponent
             buttontext={'Done'}
             style={{fontSize: moderateScale(20)}}
-            onpress={() => Nextfunction()}></Buttoncomponent>
+            onpress={() => navigation.navigate('Feeds')}></Buttoncomponent>
         </View>
       </SafeAreaView>
     </Backgroundlayout>

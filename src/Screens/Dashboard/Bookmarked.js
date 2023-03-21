@@ -14,7 +14,7 @@ const Bookmarked = ({navigation, route}) => {
   // ----------------------state---------------------------------//
   const [list, setList] = useState([]);
   const [feedlist, setfeedList] = useState([]);
-  const [globallist, setglobalList] = useState([]);
+  // const [globallist, setglobalList] = useState([]);
   // ------------------------useEffect -------------------------------//
   
   useEffect(() => {
@@ -30,7 +30,7 @@ const Bookmarked = ({navigation, route}) => {
     setfeedList(_value);
     const topicval2 = await getData(storageKey.GLOBALBOOKMARK);
     let _valueGLOBAL = JSON.parse(topicval2);
-    setglobalList(_valueGLOBAL);
+    // setglobalList(_valueGLOBAL);
     const mergedArray = _value?.concat(_valueGLOBAL);
     setList(mergedArray);
   };
@@ -49,7 +49,7 @@ const Bookmarked = ({navigation, route}) => {
   const bookmarkremove =(itemToDelete, index)=>{
     list.splice(index, 1);
     setfeedList(list.slice(0, feedlist.length));
-    setglobalList(list.slice(feedlist.length));
+    // setglobalList(list.slice(feedlist.length));
     const bookMarked = JSON.stringify(list.slice(0, feedlist.length));
     storeData(storageKey.BOOKMARK, bookMarked);
     const globalbookMarked = JSON.stringify(list.slice(feedlist.length));

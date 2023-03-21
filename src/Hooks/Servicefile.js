@@ -9,7 +9,7 @@ export const get = async (url) => {
       });
       if (res.status == 200) {
         // const message = "success";
-        // !hide ? Utility.showToast({message}) : null;
+        // Utility.showToast({message}) 
       }
     else {
         const message = "Something went wrong";
@@ -18,6 +18,8 @@ export const get = async (url) => {
       return res;
     } catch (error) {
       console.log(error);
+      const message = "Session Expire";
+        Utility.showToast({message})
       return error;
     }
   };

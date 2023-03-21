@@ -71,7 +71,7 @@ const GlobalHeadline = ({navigation}) => {
            cross
             Value={keyword}
             Press={() => clearInput(keyword)}
-            onpress={() => Searchfunc(keyword)}
+            // onpress={() => Searchfunc(keyword)}
           />
         </View>
         {data !== undefined && (
